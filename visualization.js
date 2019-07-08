@@ -1,10 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
     d3.json("/cantons.json")
         .then(cantons => {
-            d3.csv("/referendum.csv")
+            d3.csv("/durchsetzungsinitiative.csv")
                 .then(yesVotes => {
 
-                    console.log('yesVotes', yesVotes);
                     const width = 800;
                     const height = 800;
 
@@ -12,8 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     const svg = container.append('svg')
                         .attr('width', width)
-                        .attr('height', height)
-                        .style('border', '2px dashed black')
+                        .attr('height', height);
 
                     const projection = d3.geoAlbers()
                         .center([0, 46.7])
@@ -22,20 +20,18 @@ document.addEventListener("DOMContentLoaded", () => {
                         .scale(12500);
 
                     const tooltip = container.append('div')
-                        .style('opacity' , 0)
-                        .style('position' , 'fixed')
-                        .style('background' , 'rgba(255, 255, 255, 0.8)')
-                        .style('padding' , '0.5rem')
-                        .style('pointer-events' , 'none');
+                        .style('opacity', 0)
+                        .style('position', 'fixed')
+                        .style('background', 'rgba(255, 255, 255, 0.9)')
+                        .style('padding', '0.7rem')
+                        .style('pointer-events', 'none')
+                        .style('box-shadow', '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)');
 
                     const pathGenerator = d3.geoPath().projection(projection);
 
-                    // TODO: use other color range
-                    // https://gka.github.io/palettes/#/10|d|fe2b3a,ffffff|ffffff,5cb24a|1|1
-
                     const colorScale = d3.scaleThreshold()
-                        .domain([30,35,40,45,50,55,60,65,70,100])
-                        .range(["#d0001b", "#e0513c", "#ee7e5f", "#f7a684", "#fdceaa", "#d0e0af", "#a6c185", "#7da35b", "#538633", "#256900"]);
+                        .domain([30, 35, 40, 45, 50, 55, 60, 65, 70, 100])
+                        .range(['#cb2300', '#dd5934', '#ec8361', '#f7ac90', '#fcd3c1', '#c6d5ce', '#9ebcae', '#76a28f', '#4e8a71', '#1f7154']);
 
                     const switzerland = svg.selectAll("path")
                         .data(cantons.features)
@@ -50,9 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         .on('mouseenter', function (d) {
                             tooltip
                                 .style('opacity', 1)
-                                .html(d.properties.name)
+                                .html(function () {
+                                    const yes = yesVotes.find(yesVote => yesVote.id == d.properties.id);
+                                    return "<b>" + d.properties.name + "</b>" + "<br/>" + "Ja-Stimmenanteil&nbsp;in&nbsp;%&nbsp;" + yes.ja_anteil
+                                })
                         })
-                        .on('mousemove', function (d) {
+                        .on('mousemove', function () {
                             tooltip
                                 .style('left', d3.event.pageX + 'px')
                                 .style('top', d3.event.pageY + 'px')
