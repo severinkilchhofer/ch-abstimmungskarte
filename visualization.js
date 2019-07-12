@@ -7,9 +7,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     const width = 800;
                     const height = 800;
 
-                    const container = d3.select('#viz');
+                    const svgContainer = d3.select('#viz');
 
-                    const svg = container.append('svg')
+                    const svg = svgContainer.append('svg')
                         .attr('width', width)
                         .attr('height', height);
 
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         .parallels([40, 50])
                         .scale(12500);
 
-                    const tooltip = container.append('div')
+                    const tooltip = svgContainer.append('div')
                         .style('opacity', 0)
                         .style('position', 'fixed')
                         .style('background', 'rgba(255, 255, 255, 0.9)')
